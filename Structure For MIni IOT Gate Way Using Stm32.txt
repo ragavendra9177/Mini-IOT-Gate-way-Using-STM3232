@@ -1,0 +1,90 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Define the structure for the linked list node
+struct Node {
+    char string1[50];
+    char string2[50];
+    char string3[50];
+    int number;
+    struct Node* next;
+};
+
+// Function to create a new node
+struct Node* createNode(char* s1, char* s2, char* s3, int num) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    if (newNode == NULL) {
+        printf("Memory allocation failed\n");
+        return NULL;
+    }
+    strcpy(newNode->string1, s1);
+    strcpy(newNode->string2, s2);
+    strcpy(newNode->string3, s3);
+    newNode->number = num;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Function to print the linked list
+void printList(struct Node* head) {
+    struct Node* temp = head;
+    while (temp != NULL) {
+        printf("String1: %s, String2: %s, String3: %s, Number: %d\n",
+               temp->string1, temp->string2, temp->string3, temp->number);
+        temp = temp->next;
+    }
+}
+
+// Function to add a new node at the end of the list
+void Add_newnode_Atend(struct Node** Last, char* s1, char* s2, char* s3, int num) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    if (newNode == NULL) {
+        printf("Memory allocation failed\n");
+        return;
+    }
+    strcpy(newNode->string1, s1);
+    strcpy(newNode->string2, s2);
+    strcpy(newNode->string3, s3);
+    newNode->number = num;
+    newNode->next = NULL;
+    (*Last)->next = newNode;
+    *Last = newNode;
+}
+
+int main() {
+    struct Node* head = NULL;   // Points to the first node
+    struct Node* Last = NULL;   // Points to the last node
+
+    // Creating three nodes with sample data this are im assuming
+    for (int i = 1; i <= 3; i++) {
+        char s1[50], s2[50], s3[50];
+        sprintf(s1, "Node%d_String1", i);
+        sprintf(s2, "Node%d_String2", i);
+        sprintf(s3, "Node%d_String3", i);
+        int num = i * 10;
+
+        struct Node* newNode = createNode(s1, s2, s3, num);
+
+        if (head == NULL) {
+            head = newNode;
+            Last = head;
+        } else {
+            Last->next = newNode;
+            Last = Last->next;
+        }
+    }
+
+    char p1[10] = "prasad1";
+    char p2[10] = "prasad2";
+    char p3[10] = "prasad3";
+    int numm = 7;
+    
+    // Adding a new node at the end
+    Add_newnode_Atend(&Last, p1, p2, p3, numm);
+
+    // Print the linked list
+    printList(head);
+
+    return 0;
+}
