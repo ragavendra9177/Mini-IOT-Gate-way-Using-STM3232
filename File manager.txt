@@ -1,0 +1,99 @@
+Below is the code that implements logging data for the two cases:
+
+1.Logging data into raw memory blocks (not tied to a file).
+2.Logging data into a file structure (with linked memory blocks).
+
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Memory Block Structure
+typedef struct MemoryBlock {
+    char message[50];            // Message: "Person entered the gate"
+    char timestamp[20];          // Timestamp: e.g., "2024-11-19 10:00"
+    int employee_id;             // Employee ID
+    struct MemoryBlock* next;    // Pointer to the next block
+} MemoryBlock;
+
+// File Structure
+typedef struct File {
+    char name[50];               // File name
+    MemoryBlock* head;           // Head pointer to memory blocks
+    struct File* next;           // Pointer to next file (optional for file management)
+} File;
+
+// Function Prototypes
+MemoryBlock* createMemoryBlock(const char* message, const char* timestamp, int employee_id);
+File* createFile(const char* fileName);
+void logDataInMemory(MemoryBlock** memoryHead, const char* message, const char* timestamp, int employee_id);
+void logDataInFile(File* file, const char* message, const char* timestamp, int employee_id);
+void printMemoryBlocks(MemoryBlock* head);
+void printFile(File* file);
+
+int main() {
+    // Case 1: Logging data into raw memory blocks
+    MemoryBlock* memoryHead = NULL; // Head of the linked list for raw memory
+    logDataInMemory(&memoryHead, "Person entered the gate", "2024-11-19 10:00", 101);
+    logDataInMemory(&memoryHead, "Person entered the gate", "2024-11-19 10:05", 102);
+    printf("Raw Memory Blocks:\n");
+    printMemoryBlocks(memoryHead);
+
+    // Case 2: Logging data into a file structure
+    File* file = createFile("gate_log.txt");
+    logDataInFile(file, "Person entered the gate", "2024-11-19 10:10", 103);
+    logDataInFile(file, "Person entered the gate", "2024-11-19 10:15", 104);
+    printf("\nFile Contents:\n");
+    printFile(file);
+
+    return 0;
+}
+
+// Create a new memory block
+MemoryBlock* createMemoryBlock(const char* message, const char* timestamp, int employee_id) {
+    MemoryBlock* newBlock = (MemoryBlock*)malloc(sizeof(MemoryBlock));
+    strncpy(newBlock->message, message, sizeof(newBlock->message) - 1);
+    strncpy(newBlock->timestamp, timestamp, sizeof(newBlock->timestamp) - 1);
+    newBlock->employee_id = employee_id;
+    newBlock->next = NULL;
+    return newBlock;
+}
+
+// Create a new file structure
+File* createFile(const char* fileName) {
+    File* newFile = (File*)malloc(sizeof(File));
+    strncpy(newFile->name, fileName, sizeof(newFile->name) - 1);
+    newFile->head = NULL;
+    newFile->next = NULL;
+    return newFile;
+}
+
+// Log data into raw memory blocks
+void logDataInMemory(MemoryBlock** memoryHead, const char* message, const char* timestamp, int employee_id) {
+    MemoryBlock* newBlock = createMemoryBlock(message, timestamp, employee_id);
+    newBlock->next = *memoryHead;
+    *memoryHead = newBlock;
+}
+
+// Log data into a file structure
+void logDataInFile(File* file, const char* message, const char* timestamp, int employee_id) {
+    MemoryBlock* newBlock = createMemoryBlock(message, timestamp, employee_id);
+    newBlock->next = file->head;
+    file->head = newBlock;
+}
+
+// Print memory blocks
+void printMemoryBlocks(MemoryBlock* head) {
+    while (head) {
+        printf("Message: %s, Timestamp: %s, Employee ID: %d\n", head->message, head->timestamp, head->employee_id);
+        head = head->next;
+    }
+}
+
+// Print file contents
+void printFile(File* file) {
+    printf("File Name: %s\n", file->name);
+    printMemoryBlocks(file->head);
+}
